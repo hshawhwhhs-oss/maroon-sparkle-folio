@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Map as MapIcon, PlusSquare, Info, Download } from 'lucide-react';
+import { Newspaper, Map as MapIcon, PlusSquare, Info, Download } from 'lucide-react';
 import logo from '../assets/logo.jpg';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -13,24 +13,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // PWA install prompt
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
     window.addEventListener('beforeinstallprompt', handler);
-
-    // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
     }
-
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
@@ -43,10 +38,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const navItems = [
-    { name: 'Feed', path: '/', icon: Home },
-    { name: 'Map', path: '/map', icon: MapIcon },
-    { name: 'Report', path: '/add', icon: PlusSquare },
-    { name: 'Info', path: '/info', icon: Info },
+    { name: 'ফিড', path: '/', icon: Newspaper },
+    { name: 'ম্যাপ', path: '/map', icon: MapIcon },
+    { name: 'রিপোর্ট', path: '/add', icon: PlusSquare },
+    { name: 'তথ্য', path: '/info', icon: Info },
   ];
 
   return (
@@ -62,12 +57,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             onClick={handleInstall}
             className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full text-sm font-bold transition-all active:scale-95"
           >
-            <Download size={16} /> Install
+            <Download size={16} /> ইনস্টল
           </button>
         )}
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 overflow-y-auto pb-20">
         {children}
       </main>
