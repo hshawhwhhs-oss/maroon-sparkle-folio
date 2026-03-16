@@ -4,7 +4,7 @@ import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestor
 import { Report } from '../types';
 import ReportCard from '../components/ReportCard';
 import { DEFAULT_CORRUPTION_TYPES } from '../constants';
-import { Filter, TrendingUp, Clock, MapPin as MapPinIcon, Search } from 'lucide-react';
+import { TrendingUp, Clock, MapPin as MapPinIcon, Search, Flame, BarChart3 } from 'lucide-react';
 
 export default function FeedPage() {
   const [reports, setReports] = useState<Report[]>([]);
@@ -54,46 +54,83 @@ export default function FeedPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 px-4 pt-4 mb-4">
-        <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-center">
-          <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-0.5">আজকের রিপোর্ট</p>
-          <p className="text-2xl font-black text-red-600">{todayReports}</p>
-        </div>
-        <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-center">
-          <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-0.5">মোট রিপোর্ট</p>
-          <p className="text-2xl font-black text-gray-900">{reports.length}</p>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="px-4 mb-4 space-y-3">
-        <div className="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
-          <Filter size={16} className="text-gray-400 ml-2" />
-          <select value={filterType} onChange={(e) => setFilterType(e.target.value)}
-            className="flex-1 bg-transparent border-none text-sm font-medium text-gray-700 outline-none">
-            <option value="all">সকল করাপশন টাইপ</option>
-            {DEFAULT_CORRUPTION_TYPES.map(type => (<option key={type.id} value={type.name}>{type.name}</option>))}
-          </select>
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-          <button onClick={() => setSortBy('latest')} className={`flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${sortBy === 'latest' ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}>
-            <Clock size={14} /> Latest
-          </button>
-          <button onClick={() => setSortBy('trending')} className={`flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${sortBy === 'trending' ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}>
-            <TrendingUp size={14} /> Trending
-          </button>
-          <button onClick={handleNearMe} className={`flex items-center gap-1 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${sortBy === 'near' ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}>
-            <MapPinIcon size={14} /> Near Me
-          </button>
+      {/* Hero Stats Banner */}
+      <div className="mx-4 mt-4 mb-4 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-2xl p-4 shadow-lg relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIi8+PC9zdmc+')] opacity-50" />
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+              <Flame size={24} className="text-yellow-200" />
+            </div>
+            <div>
+              <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest">আজকের দুর্নীতি</p>
+              <p className="text-3xl font-black text-white leading-none">{todayReports}</p>
+            </div>
+          </div>
+          <div className="h-12 w-px bg-white/20" />
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest text-right">মোট রিপোর্ট</p>
+              <p className="text-3xl font-black text-white leading-none text-right">{reports.length}</p>
+            </div>
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+              <BarChart3 size={24} className="text-white" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Reports - social media feed style */}
+      {/* Corruption Type Filter - Horizontal scroll chips */}
+      <div className="px-4 mb-3">
+        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+          <button
+            onClick={() => setFilterType('all')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 border ${
+              filterType === 'all'
+                ? 'bg-red-600 text-white border-red-600 shadow-md shadow-red-200'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-red-200'
+            }`}
+          >
+            🔥 সব
+          </button>
+          {DEFAULT_CORRUPTION_TYPES.map(type => (
+            <button
+              key={type.id}
+              onClick={() => setFilterType(type.name)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 border ${
+                filterType === type.name
+                  ? 'text-white border-transparent shadow-md'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+              }`}
+              style={filterType === type.name ? { backgroundColor: type.color, borderColor: type.color } : {}}
+            >
+              <span>{type.icon}</span>
+              <span>{type.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Sort Buttons */}
+      <div className="px-4 mb-4">
+        <div className="flex gap-2">
+          <button onClick={() => setSortBy('latest')} className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${sortBy === 'latest' ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}>
+            <Clock size={14} /> সাম্প্রতিক
+          </button>
+          <button onClick={() => setSortBy('trending')} className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${sortBy === 'trending' ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}>
+            <TrendingUp size={14} /> ট্রেন্ডিং
+          </button>
+          <button onClick={handleNearMe} className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 ${sortBy === 'near' ? 'bg-gray-900 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}>
+            <MapPinIcon size={14} /> কাছাকাছি
+          </button>
+        </div>
+      </div>
+
+      {/* Reports */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-500 font-medium">Loading...</p>
+          <p className="text-gray-500 font-medium">লোড হচ্ছে...</p>
         </div>
       ) : filteredReports.length > 0 ? (
         <div className="divide-y divide-gray-100 md:px-4 md:space-y-4 md:divide-y-0">
